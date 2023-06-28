@@ -9,7 +9,9 @@ const getUsers = (req, res) => {
 
 const getUser = (req, res) => {
   const { userId } = req.params;
+  // eslint-disable-next-line no-console
   console.log(userId);
+  // eslint-disable-next-line no-console
   console.log(req.params);
 
   User.findById(userId)
