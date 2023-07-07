@@ -4,7 +4,7 @@ module.exports = {
     commonjs: true,
     es2021: true,
   },
-  extends: 'airbnb-base',
+  extends: ["eslint:recommended", "airbnb-base", "prettier"],
   overrides: [
     {
       env: {
@@ -21,6 +21,5 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
   },
-  rules: {
-  },
-};
+  rules: { "no-underscore-dangle": ["error", { allow: ["_id"] }] },
+  };
