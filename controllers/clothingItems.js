@@ -1,4 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
+
 const { ERROR_400, ERROR_404, ERROR_500 } = require("../utils/errors");
 
 const regularItemError = (req, res, err) => {
@@ -71,7 +72,32 @@ const deleteItems = (req, res) => {
       findByIdItemError(req, res, e);
     });
 };
-
+const likeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail()
+    .then(() =>
+      res.status(200).send({ message: "Item has successfully been liked" })
+    )
+    .catch((e) => {
+      findByIdItemError(req, res, e);
+    });
+};
+const disLikeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail()
+    .then((item) => res.status(200).send({ data: item }))
+    .catch((e) => {
+      findByIdItemError(req, res, e);
+    });
+};
 
 
 module.exports = {
@@ -79,5 +105,6 @@ module.exports = {
   getItems,
   updateItems,
   deleteItems,
-
+  likeItem,
+  disLikeItem,
 };
