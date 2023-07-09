@@ -59,7 +59,7 @@ const getUserId = (req, res) => {
     .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((e) => {
-      findByIdItemError(req, res, e);
+      combinedItemError(req, res, e);
     });
 };
 

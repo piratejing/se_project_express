@@ -92,7 +92,7 @@ const deleteItems = (req, res) => {
     .orFail()
     .then((item) => res.status(200).send({ item }))
     .catch((e) => {
-      findByIdItemError(req, res, e);
+      combinedItemError(req, res, e);
     });
 };
 const likeItem = (req, res) => {
@@ -106,7 +106,7 @@ const likeItem = (req, res) => {
       res.status(200).send({ message: "Item has successfully been liked" })
     )
     .catch((e) => {
-      findByIdItemError(req, res, e);
+      combinedItemError(req, res, e);
     });
 };
 const disLikeItem = (req, res) => {
@@ -118,7 +118,7 @@ const disLikeItem = (req, res) => {
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
-      findByIdItemError(req, res, e);
+      combinedItemError(req, res, e);
     });
 };
 
