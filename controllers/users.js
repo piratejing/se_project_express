@@ -15,7 +15,6 @@ const combinedItemError = (req, res, err) => {
   return res.status(ERROR_500).send({ message: "An error has occurred" });
 };
 
-
 const getUser = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send(users))
