@@ -3,14 +3,13 @@ const ClothingItem = require("../models/clothingItem");
 const { ERROR_400, ERROR_404, ERROR_500 } = require("../utils/errors");
 
 const combinedItemError = (req, res, err) => {
-  if (err.name === "ValidationError") {
-    return res.status(ERROR_400).send({
-      message: "Invalid data passed for creating or updating an item.",
-    });
-  }
-  if (err.name === "CastError" || err.name === "DocumentNotFoundError") {
+  if (err.name === "ValidationError" || err.name === "CastError") {
     let statusCode = ERROR_400;
-    let errorMessage = "Invalid ID.";
+    let errorMessage = "Invalid data passed for creating or updating an item.";
+
+    if (err.name === "CastError") {
+      errorMessage = "Invalid ID.";
+    }
 
     if (err.name === "DocumentNotFoundError") {
       statusCode = ERROR_404;
@@ -25,33 +24,6 @@ const combinedItemError = (req, res, err) => {
   return res.status(ERROR_500).send({ message: "An error has occurred" });
 };
 
-// const regularItemError = (req, res, err) => {
-//   if (err.name === "ValidationError") {
-//     return res.status(ERROR_400).send({
-//       message: "Invalid data passed for creating or updating an item.",
-//     });
-//   }
-//   if (err.name === "CastError") {
-//     return res.status(ERROR_400).send({
-//       message: "Invalid ID.",
-//     });
-//   }
-//   return res.status(ERROR_500).send({ message: "An error has occurred" });
-// };
-
-// const findByIdItemError = (req, res, err) => {
-//   if (err.name === "CastError" || err.name === "ValidationError") {
-//     return res.status(ERROR_400).send({
-//       message: "Invalid data passed for creating or updating an item.",
-//     });
-//   }
-//   if (err.name === "DocumentNotFoundError") {
-//     return res.status(ERROR_404).send({
-//       message: "Card ID not found",
-//     });
-//   }
-//   return res.status(ERROR_500).send({ message: "An error has occurred" });
-// };
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
