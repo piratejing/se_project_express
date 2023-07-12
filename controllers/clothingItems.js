@@ -1,19 +1,21 @@
 const ClothingItem = require("../models/clothingItem");
+const { errors } = require("../utils/errors");
 
-const { ERROR_400, ERROR_404, ERROR_500 } = require("../utils/errors");
+
+// const { ERROR_400, ERROR_404, ERROR_500 } = require("../utils/errors");
 
 const combinedItemError = (req, res, err) => {
   if (err.name === "ValidationError" || err.name === "CastError") {
-    return res.status(ERROR_400).send({
+    return res.status(errors.BAD_REQUEST).send({
       message: "Invalid data passed for creating or updating a item.",
     });
   }
   if (err.name === "DocumentNotFoundError") {
-    return res.status(ERROR_404).send({
+    return res.status(errors.NOT_FOUND).send({
       message: "Card ID not found.",
     });
   }
-  return res.status(ERROR_500).send({ message: "An error has occurred" });
+  return res.status(errors.SERVER_ERROR).send({ message: "An error has occurred" });
 };
 
 const createItem = (req, res) => {
@@ -50,14 +52,23 @@ const updateItems = (req, res) => {
 
 const deleteItems = (req, res) => {
   const { itemId } = req.params;
-
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
-    .then((item) => res.status(200).send({ item }))
+    .then((item) => {
+      if (String(item.owner) !== req.user._id) {
+        return res
+          .status(errors.FORBIDDEN)
+          .send({ message: "You are not authorized to delete this item" });
+      }
+      return item.deleteOne().then(() => {
+        res.send({ message: "Item removed" });
+      });
+    })
     .catch((e) => {
       combinedItemError(req, res, e);
     });
 };
+
 const likeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
@@ -72,6 +83,7 @@ const likeItem = (req, res) => {
       combinedItemError(req, res, e);
     });
 };
+
 const disLikeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
@@ -84,7 +96,6 @@ const disLikeItem = (req, res) => {
       combinedItemError(req, res, e);
     });
 };
-
 
 module.exports = {
   createItem,

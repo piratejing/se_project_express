@@ -1,9 +1,12 @@
-const ERROR_400 = 400;
-const ERROR_404 = 404;
-const ERROR_500 = 500;
+const errors = {
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  DUPLICATE: 409,
+  SERVER_ERROR: 500,
+};
 
 module.exports = {
-  ERROR_400,
-  ERROR_404,
-  ERROR_500,
+  errors,
 };

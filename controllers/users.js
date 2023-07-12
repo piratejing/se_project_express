@@ -1,18 +1,24 @@
+// const User = require("../models/user");
+// const { ERROR_400, ERROR_404, ERROR_500 } = require("../utils/errors");
+
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { ERROR_400, ERROR_404, ERROR_500 } = require("../utils/errors");
+const { errors } = require("../utils/errors");
+const { JWT_SECRET } = require("../utils/config");
 
 const combinedItemError = (req, res, err) => {
   if (err.name === "ValidationError" || err.name === "CastError") {
-    return res.status(ERROR_400).send({
+    return res.status(errors.BAD_REQUEST).send({
       message: "Invalid data passed for creating or updating a user.",
     });
   }
   if (err.name === "DocumentNotFoundError") {
-    return res.status(ERROR_404).send({
+    return res.status(errors.NOT_FOUND).send({
       message: "User ID not found.",
     });
   }
-  return res.status(ERROR_500).send({ message: "An error has occurred" });
+  return res.status(errors.SERVER_ERROR).send({ message: "An error has occurred" });
 };
 
 const getUser = (req, res) => {
@@ -35,11 +41,65 @@ const getUserId = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
+  const { name, avatar, email, password } = req.body;
 
-  User.create({ name, avatar })
+  User.findOne({ email })
+    .then((previousUser) => {
+      if (previousUser) {
+        return res
+          .status(errors.DUPLICATE)
+          .send({ message: "Email already exist" });
+      }
+      return bcrypt.hash(password, 10);
+    })
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => {
-      res.send({ data: user });
+      res.send({
+        data: { name: user.name, avatar: user.avatar, email: user.email },
+      });
+    })
+    .catch((e) => {
+      combinedItemError(req, res, e);
+    });
+};
+
+const loginUser = (req, res) => {
+  const { email, password } = req.body;
+
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token });
+    })
+    .catch(() =>
+      res.status(errors.UNAUTHORIZED).send({ message: "User not authorized" })
+    );
+};
+
+const getCurrentUser = (req, res) => {
+  User.findById(req.user._id)
+    .orFail()
+    .then((user) => res.send({ user }))
+    .catch((e) => combinedItemError(req, res, e));
+};
+
+const updateUser = (req, res) => {
+  const { name, avatar } = req.body;
+  const update = { name, avatar };
+
+  User.findOneAndUpdate({ _id: req.user._id }, update, {
+    new: true,
+    runValidators: true,
+  })
+    .then((user) => {
+      if (!user) {
+        return res.status(errors.NOT_FOUND).send({ message: "User not found" });
+      }
+      return res.send({
+        data: { user, message: "Username updated successfully" },
+      });
     })
     .catch((e) => {
       combinedItemError(req, res, e);
@@ -50,4 +110,7 @@ module.exports = {
   getUser,
   getUserId,
   createUser,
+  loginUser,
+  getCurrentUser,
+  updateUser,
 };
