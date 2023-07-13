@@ -1,9 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
 const { errors } = require("../utils/errors");
 
-
-// const { ERROR_400, ERROR_404, ERROR_500 } = require("../utils/errors");
-
 const combinedItemError = (req, res, err) => {
   if (err.name === "ValidationError" || err.name === "CastError") {
     return res.status(errors.BAD_REQUEST).send({

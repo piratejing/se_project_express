@@ -1,6 +1,3 @@
-// const User = require("../models/user");
-// const { ERROR_400, ERROR_404, ERROR_500 } = require("../utils/errors");
-
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
@@ -40,6 +37,36 @@ const getUserId = (req, res) => {
     });
 };
 
+const createUser = (req, res) => {
+  const { name, avatar, email, password } = req.body;
+
+  if (!email) {
+    res.status(errors.BAD_REQUEST).send({ message: "Must provide email" });
+    return;
+  }
+
+  User.findOne({ email })
+    .then((previousUser) => {
+      if (previousUser) {
+        return res
+          .status(errors.DUPLICATE)
+          .send({ message: "Email already exists" });
+      }
+
+      return bcrypt.hash(password, 10)
+        .then((hash) => User.create({ name, avatar, email, password: hash }))
+        .then((user) => {
+          res.send({
+            data: { name: user.name, avatar: user.avatar, email: user.email },
+          });
+        });
+    })
+    .catch((e) => {
+      combinedItemError(req, res, e);
+    });
+};
+
+
 // const createUser = (req, res) => {
 //   const { name, avatar, email, password } = req.body;
 
@@ -48,45 +75,20 @@ const getUserId = (req, res) => {
 //       if (previousUser) {
 //         return res
 //           .status(errors.DUPLICATE)
-//           .send({ message: "Email already exists" });
+//           .send({ message: "Email already exist" });
 //       }
-
-//       return bcrypt.hash(password, 10)
-//         .then((hash) => User.create({ name, avatar, email, password: hash }))
-//         .then((user) => {
-//           res.send({
-//             data: { name: user.name, avatar: user.avatar, email: user.email },
-//           });
-//         });
+//       return bcrypt.hash(password, 10);
+//     })
+//     .then((hash) => User.create({ name, avatar, email, password: hash }))
+//     .then((user) => {
+//       res.send({
+//         data: { name: user.name, avatar: user.avatar, email: user.email },
+//       });
 //     })
 //     .catch((e) => {
 //       combinedItemError(req, res, e);
 //     });
 // };
-
-
-const createUser = (req, res) => {
-  const { name, avatar, email, password } = req.body;
-
-  User.findOne({ email })
-    .then((previousUser) => {
-      if (previousUser) {
-        return res
-          .status(errors.DUPLICATE)
-          .send({ message: "Email already exist" });
-      }
-      return bcrypt.hash(password, 10);
-    })
-    .then((hash) => User.create({ name, avatar, email, password: hash }))
-    .then((user) => {
-      res.send({
-        data: { name: user.name, avatar: user.avatar, email: user.email },
-      });
-    })
-    .catch((e) => {
-      combinedItemError(req, res, e);
-    });
-};
 
 const loginUser = (req, res) => {
   const { email, password } = req.body;

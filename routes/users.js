@@ -8,10 +8,5 @@ router.get("/me", getCurrentUser);
 
 router.patch("/me", updateUser);
 
-// router.get("/", getUser);
-
-// router.get("/:userId", getUserId);
-
-// router.post("/", createUser);
 
 module.exports = router;
