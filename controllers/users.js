@@ -46,9 +46,7 @@ const createUser = (req, res) => {
   User.findOne({ email })
     .then((previousUser) => {
       if (previousUser) {
-        return res
-          .status(errors.DUPLICATE)
-          .send({ message: "Email already exist" });
+        return Promise.reject({ status: errors.DUPLICATE, message: "Email already exists" });
       }
       return bcrypt.hash(password, 10);
     })
@@ -58,10 +56,38 @@ const createUser = (req, res) => {
         data: { name: user.name, avatar: user.avatar, email: user.email },
       });
     })
-    .catch((e) => {
-      combinedItemError(req, res, e);
+    .catch((error) => {
+      if (error.status) {
+        res.status(error.status).send({ message: error.message });
+      } else {
+        combinedItemError(req, res, error);
+      }
     });
 };
+
+
+// const createUser = (req, res) => {
+//   const { name, avatar, email, password } = req.body;
+
+//   User.findOne({ email })
+//     .then((previousUser) => {
+//       if (previousUser) {
+//         return res
+//           .status(errors.DUPLICATE)
+//           .send({ message: "Email already exist" });
+//       }
+//       return bcrypt.hash(password, 10);
+//     })
+//     .then((hash) => User.create({ name, avatar, email, password: hash }))
+//     .then((user) => {
+//       res.send({
+//         data: { name: user.name, avatar: user.avatar, email: user.email },
+//       });
+//     })
+//     .catch((e) => {
+//       combinedItemError(req, res, e);
+//     });
+// };
 
 const loginUser = (req, res) => {
   const { email, password } = req.body;
