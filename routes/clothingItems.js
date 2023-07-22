@@ -1,25 +1,18 @@
 const router = require("express").Router();
+const auth = require("../middlewares/auth");
 
-const { 
-  getItems,
+const {
   createItem,
-  deleteItems,
+  getItems,
+  deleteItem,
   likeItem,
-  disLikeItem,
+  dislikeItem,
 } = require("../controllers/clothingItems");
 
-const { authorization } = require("../middlewares/auth");
-
-
+router.post("/", auth, createItem);
 router.get("/", getItems);
-
-router.use(authorization);
-
-router.post("/", createItem);
-
-router.put("/:itemId/likes", likeItem);
-
-router.delete("/:itemId", deleteItems);
-router.delete("/:itemId/likes", disLikeItem);
+router.delete("/:itemId", auth, deleteItem);
+router.put("/:itemId/likes", auth, likeItem);
+router.delete("/:itemId/likes", auth, dislikeItem);
 
 module.exports = router;

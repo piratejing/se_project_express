@@ -1,8 +1,8 @@
 {
   "name": "se_project_express",
   "version": "1.0.0",
-  "description": "The back-end project is focused on creating a server for the WTWR application.",
-  "main": ".eslintrc.js",
+  "description": "The back-end project is focused on creating a server for the WTWR application. You’ll gain a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization.\r ## Running the Project\r `npm run start` — to launch the server",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint .",
@@ -12,19 +12,19 @@
   "author": "Alan Shieh",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^8.44.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-import": "^2.26.0",
-    "nodemon": "^1.14.9",
-    "prettier": "^3.0.0"
+    "eslint-plugin-import": "^2.27.5",
+    "nodemon": "^2.0.22"
   },
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "eslint-config-prettier": "^8.8.0",
     "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.1",
-    "mongoose": "^6.6.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.1.0",
     "validator": "^13.9.0"
   }
 }
