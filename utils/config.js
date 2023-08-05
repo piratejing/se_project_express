@@ -1,3 +1,5 @@
-const JWT_SECRET = "i love lao gan ma";
+const { JWT_SECRET = "uber-secret-key" } = process.env;
 
-module.exports = JWT_SECRET;
+module.exports = {
+  JWT_SECRET,
+};
