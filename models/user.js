@@ -1,44 +1,38 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
-const { UnauthorizedError } = require("../errors/unauthorized-error");
+const UnauthorizedError = require("../errors/unauthorized");
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Name is required"],
-    minlength: [2, "Name must be at least 2 characters long"],
-    maxlength: [300, "Name cannot exceed 30 characters"],
-    role: {
-      type: String,
-      default: "Elise Bouer",
-    },
+    default: "Elise Bouer",
+    required: true,
+    minlength: 2,
+    maxlength: 30,
   },
   avatar: {
     type: String,
-    required: [true, "Avatar is required"],
     default:
-      "https://practicum-content.s3.us-west-1.amazonaws.com/software-engineer/wtwr-project/Elise.png", // Set default value for avatar field
+      "https://practicum-content.s3.us-west-1.amazonaws.com/software-engineer/wtwr-project/Elise.png",
+    required: true,
     validate: {
-      validator: (value) => validator.isURL(value),
+      validator: (v) => validator.isURL(v),
       message: "You must enter a valid URL",
     },
   },
   email: {
     type: String,
-    required: [true, "Email is required"],
     unique: true,
+    required: true,
     validate: {
-      validator: (value) => {
-        console.log(value, "THIS IS THE EMAIL");
-        return validator.isEmail(value);
-      },
-      message: "Invalid email address",
+      validator: (v) => validator.isEmail(v),
+      message: "Wrong email format",
     },
   },
   password: {
     type: String,
-    required: [true, "Password is required"],
+    required: true,
     select: false,
   },
 });
@@ -47,21 +41,24 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
   email,
   password
 ) {
+  // const UnauthorizedError = new Error("Unauthorized user");
+  // UnauthorizedError.statusCode = 401;
   return this.findOne({ email })
     .select("+password")
-    .then((endUser) => {
-      if (!endUser) {
-        throw new UnauthorizedError("Incorrect email or password");
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new UnauthorizedError("Unauthorized user"));
       }
 
-      return bcrypt.compare(password, endUser.password).then((isMatch) => {
-        if (!isMatch) {
-          throw new UnauthorizedError("Incorrect email or password");
+      return bcrypt.compare(password, user.password).then((matched) => {
+        if (!matched) {
+          return Promise.reject(new UnauthorizedError("Unauthorized user"));
         }
-
-        return endUser;
+        return user;
       });
     });
 };
 
-module.exports = mongoose.model("user", userSchema);
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;

@@ -1,26 +1,18 @@
 const router = require("express").Router();
-const User = require("./user");
-const clothingItem = require("./clothingItem");
-const { login, createUser } = require("../controllers/user");
-
-const {
-  validateCreatedUserInfo,
-  validateLogin,
-} = require("../middlewares/validation");
-const { NotFoundError } = require("../errors/not-found-error");
-
-router.post("/signin", validateLogin, login);
-router.post("/signup", validateCreatedUserInfo, createUser);
+const clothingItem = require("./clothingItems");
+const user = require("./users");
+const { NotFoundError } = require("../errors/notFound");
+const { createUser, login } = require("../controllers/users");
+const auth = require("../middlewares/auth");
+const { validateUser, validateAuth } = require("../middlewares/validation");
 
 router.use("/items", clothingItem);
-router.use("/users", User);
+router.use("/users", auth.handleAuthError, user);
+router.post("/signup", validateUser, createUser);
+router.post("/signin", validateAuth, login);
 
-router.use((req, res, next) => {
-  next(
-    new NotFoundError(
-      "There is NO API with the requested path, or the request was sent to a non-existent address"
-    )
-  );
+router.use("*", (req, res, next) => {
+  next(new NotFoundError("Router not found"));
 });
 
 module.exports = router;
