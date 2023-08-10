@@ -12,6 +12,6 @@ Postman: A popular API development tool that allows developers to design, test, 
 
 ESLint: Tool used to help identify and fix coding errors.
 
--[Front-End Code](https://github.com/piratejing/se_project_react)
+-[Front-End Code](https://bingchilling.offbitch.com)
 
--[Domain Deploy Address](api.bingchilling.offbitch.com/) <-- Front and Back End Deployment
+-[Back-End Code](https://api.bingchilling.offbitch.com)

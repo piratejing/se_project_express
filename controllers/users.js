@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
-// const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-// const { JWT_SECRET } = require("../utils/config");
+const { JWT_SECRET } = require("../utils/config");
 const ConflictError = require("../errors/conflict");
 const NotFoundError = require("../errors/notFound");
 const UnauthorizedError = require("../errors/unauthorized");
@@ -39,7 +39,12 @@ const login = (req, res, next) => {
       if (!user) {
         return next(new UnauthorizedError("Email or Password not found"));
       }
-      return null;
+
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+
+      return res.send({ token });
     })
     .catch(next);
 };
