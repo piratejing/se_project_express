@@ -11,3 +11,7 @@ Mongoose: An Object Data Modeling (ODM) library for MongoDB and Node.js that sim
 Postman: A popular API development tool that allows developers to design, test, and document APIs, providing features such as sending HTTP requests, inspecting responses, and automating API workflows.
 
 ESLint: Tool used to help identify and fix coding errors.
+
+-[Front-End Code](https://github.com/piratejing/se_project_react)
+
+-[Domain Deploy Address](api.bingchilling.offbitch.com/) <-- Front and Back End Deployment

@@ -1,8 +1,3 @@
-const INVALID_DATA_ERROR = {
-  status: "BadRequest",
-  error: 400,
-};
-
 const UNAUTHORIZED_ERROR = {
   status: "Unauthorized",
   error: 401,
@@ -29,7 +24,6 @@ const DEFAULT_ERROR = {
 };
 
 module.exports = {
-  INVALID_DATA_ERROR,
   NOTFOUND_ERROR,
   DEFAULT_ERROR,
   FORBIDDEN_ERROR,

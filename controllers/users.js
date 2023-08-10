@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { JWT_SECRET } = require("../utils/config");
+// const { JWT_SECRET } = require("../utils/config");
 const ConflictError = require("../errors/conflict");
 const NotFoundError = require("../errors/notFound");
 const UnauthorizedError = require("../errors/unauthorized");
@@ -10,14 +10,11 @@ const BadRequestError = require("../errors/invalidData");
 const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
-  if (!password) {
-    return next(new UnauthorizedError("Password is required"));
-  }
-
   User.findOne({ email }).then((userRes) => {
     if (userRes) {
-      next(new ConflictError("Email already exists in database"));
+      return next(new ConflictError("Email already exists in database"));
     }
+    return null;
   });
   return bcrypt
     .hash(password, 10)
@@ -42,20 +39,9 @@ const login = (req, res, next) => {
       if (!user) {
         return next(new UnauthorizedError("Email or Password not found"));
       }
-      return bcrypt.compare(password, user.password).then((matched) => {
-        if (!matched) {
-          next(new UnauthorizedError("Email or Password not found"));
-        }
-
-        const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-          expiresIn: "7d",
-        });
-        res.send({ token });
-      });
+      return null;
     })
-    .catch((error) => {
-      next(error);
-    });
+    .catch(next);
 };
 
 const getCurrentUser = (req, res, next) => {

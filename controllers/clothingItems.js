@@ -45,23 +45,23 @@ const deleteItem = (req, res, next) => {
     return;
   }
 
-  ClothingItem.findOne({ _id: itemId }).then((item) => {
-    if (!item) {
-      next(new NotFoundError("Clothing item ID cannot be found"));
-      return null;
-    }
-    if (!item?.owner?.equals(userId)) {
-      next(new ForbibbenError("Unauthorized: You're not the card owner"));
-      return null;
-    }
-    return ClothingItem.deleteOne({ _id: itemId, owner: userId })
-      .then(() => {
-        res.send({ message: "Item deleted successfully" });
-      })
-      .catch((error) => {
-        next(error);
-      });
-  });
+  ClothingItem.findOne({ _id: itemId })
+    .then((item) => {
+      if (!item) {
+        next(new NotFoundError("Clothing item ID cannot be found"));
+        return null;
+      }
+      if (!item?.owner?.equals(userId)) {
+        next(new ForbibbenError("Unauthorized: You're not the card owner"));
+        return null;
+      }
+      return ClothingItem.deleteOne({ _id: itemId, owner: userId })
+        .then(() => {
+          res.send({ message: "Item deleted successfully" });
+        })
+        .catch(next);
+    })
+    .catch(next);
 };
 
 const likeItem = (req, res, next) => {
