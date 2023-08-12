@@ -1,4 +1,4 @@
-const { JWT_SECRET = "uber-secret-key" } = process.env;
+const { JWT_SECRET = "john cena" } = process.env;
 
 module.exports = {
   JWT_SECRET,
